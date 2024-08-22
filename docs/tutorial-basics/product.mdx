@@ -1,0 +1,88 @@
+---
+sidebar_position: 3
+---
+# Componente Product
+
+## Código del Componente `Product`
+
+```typescript
+// src/components/Product.tsx
+import React from "react";
+import useStore from "@/components/usestore";
+
+interface ProductProps {
+  product: {
+    id: number;
+    nombre: string;
+    descripcion: string;
+    precio: number;
+    graduacion: number;
+    imagen: string;
+  };
+}
+
+const Product: React.FC<ProductProps> = ({ product }) => {
+  const addToCart = useStore((state) => state.addToCart);
+
+  return (
+    <div className="flex flex-col justify-between rounded-md border-2 shadow-lg p-4">
+      <img
+        src={product.imagen}
+        alt={product.nombre}
+        className="w-36 mx-auto"
+      />
+      <h3 className="text-xl font-bold text-center">{product.nombre}</h3>
+      <p className="text-red-700 italic font-bold text-xl">Precio: ${product.precio.toFixed(2)}</p>
+      <p>Graduación: {product.graduacion}%</p>
+      <button 
+        className="mt-5 rounded-md bg-blue-800 text-white px-2 py-1"
+        onClick={() => addToCart(product)}
+      >
+        Agregar al carrito
+      </button>
+    </div>
+  );
+};
+
+export default Product;
+```
+
+## Desglose del Código
+
+1. **Importaciones**:
+   - `React` se importa para usar JSX y crear componentes funcionales.
+   - `useStore` se importa desde el archivo donde se define el estado global con Zustand. Específicamente, se utiliza para acceder a la función `addToCart` que actualiza el estado del carrito.
+
+2. **Interfaz `ProductProps`**:
+   - Define las propiedades esperadas por el componente `Product`.
+   - **`product`**: Un objeto que representa un producto y contiene:
+     - `id`: Identificador único del producto.
+     - `nombre`: Nombre del producto.
+     - `descripcion`: Descripción del producto.
+     - `precio`: Precio del producto.
+     - `graduacion`: Porcentaje de graduación alcohólica del producto.
+     - `imagen`: URL de la imagen del producto.
+
+3. **Componente `Product`**:
+   - **Definición**: Es un componente funcional de React que recibe un `product` como prop.
+   - **`addToCart`**: Se obtiene la función `addToCart` del estado global usando `useStore`. Esta función se usa para añadir el producto al carrito cuando el usuario hace clic en el botón.
+   
+4. **Estructura del JSX**:
+   - **`<div>`**: Contenedor principal del producto, con clases de estilo para diseño y sombra.
+   - **`<img>`**: Muestra la imagen del producto con una clase de estilo para ajustar el tamaño.
+   - **`<h3>`**: Muestra el nombre del producto en un tamaño de fuente grande y en negrita.
+   - **`<p>`**: Muestra el precio del producto en color rojo y en negrita, y la graduación alcohólica del producto.
+   - **`<button>`**: Botón para añadir el producto al carrito. Utiliza una función de clic que llama a `addToCart` con el producto como argumento.
+
+## Cómo Funciona
+
+- **Visualización del Producto**:
+  El componente `Product` recibe los detalles del producto y los muestra en la interfaz de usuario. Cada producto tiene una imagen, un nombre, un precio y un porcentaje de graduación alcohólica.
+
+- **Añadir al Carrito**:
+  Cuando el usuario hace clic en el botón "Agregar al carrito", el producto se pasa a la función `addToCart`, que está definida en el estado global de Zustand. Esta función actualiza el estado del carrito, lo que permite que el carrito se actualice en tiempo real.
+
+## Conclusión
+
+Este componente `Product` proporciona una forma clara y estilizada de presentar cada producto en la tienda y permite a los usuarios interactuar con la aplicación para gestionar su carrito de compras. Utiliza React para la estructura del componente y Zustand para la gestión del estado global del carrito.
+

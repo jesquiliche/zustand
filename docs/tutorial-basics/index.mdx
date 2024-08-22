@@ -1,0 +1,91 @@
+---
+sidebar_position: 1
+---
+# Página Home
+
+## Código Completo de la Página Principal
+
+```javascript
+'use client'
+import Cart from "@/components/Cart";
+import Product from "@/components/Product";
+
+const products = [
+  {
+    id: 1,
+    nombre: "CAMPO BURGO RESERVA 2018",
+    descripcion: "Tradición y calidad son las señas de identidad de Bodegas Isidro Milagro. Disfruta de su Campo Burgo Reserva 2018, un rioja de perfil clásico, con un tanino noble, maduro y redondo, aterciopelado, con volumen en boca y un perfecto equilibrio entre la fruta madura y la barrica.",
+    precio: 10.5,
+    graduacion: 13.5,
+    imagen: "https://res.cloudinary.com/dkrew530b/image/upload/v1719863077/fo7xxbtviptvh1x7uwme.webp",
+  },
+  {
+    id: 2,
+    nombre: "CUNE GRAN RESERVA 2017",
+    descripcion: "Cune Gran Reserva 2017 es un tinto que reúne toda la complejidad que ha dado fama mundial a Rioja y ofrece un estilo actual de entender los grandes reservas.",
+    precio: 12.0,
+    graduacion: 14.0,
+    imagen: "https://res.cloudinary.com/dkrew530b/image/upload/v1719863376/kaznug3n7aihmi6oozu2.webp",
+  },
+  {
+    id: 3,
+    nombre: "CUNE SEMIDULCE",
+    descripcion: "Un blanco suave y fresco producto de la sobremaduración. Cune Semidulce conserva toda la frescura de los blancos jóvenes secos, y la elegancia y suavidad de los tradicionales vinos dulces de Rioja.",
+    precio: 5.2,
+    graduacion: 12.28,
+    imagen: "https://res.cloudinary.com/dkrew530b/image/upload/v1719863787/av09rgd6gkjspixdkemy.webp",
+  },
+  {
+    id: 4,
+    nombre: "CARRAMONTE CRIANZA 2021",
+    descripcion: "Bodegas Viyuela se consolida como una apuesta importante y un referente en la Ribera del Duero.",
+    precio: 15.0,
+    graduacion: 14.5,
+    imagen: "https://res.cloudinary.com/dkrew530b/image/upload/v1719864181/nixctxnj25jmfoubofld.webp",
+  },
+];
+
+export default function Home() {
+  return (
+    <div>
+      <h1 className="text-3xl font-bold text-center my-5">Tienda de Vinos</h1>
+      <div className="grid grid-cols-4 gap-4 w-9/12 mx-auto">
+        {products.map((product) => (
+          <Product key={product.id} product={product} />
+        ))}
+      </div>
+      <Cart />
+    </div>
+  );
+}
+```
+
+### Desglose del Código
+
+1. **`use client`**:
+   - Esta línea se asegura de que el código se ejecute en el cliente (navegador) y no en el servidor, lo cual es importante cuando manejamos estados y eventos del usuario, como la gestión del carrito de compras.
+
+2. **Importación de Componentes**:
+   - Se importan dos componentes principales:
+     - `Cart`: Muestra los productos que se han añadido al carrito.
+     - `Product`: Muestra cada producto individual con detalles y un botón para añadirlo al carrito.
+
+3. **Lista de Productos (`products`)**:
+   - Se define un array de objetos `products` que contiene los detalles de cada producto disponible en la tienda, incluyendo su `id`, `nombre`, `descripcion`, `precio`, `graduacion`, y `imagen`.
+
+4. **Función `Home`**:
+   - **`return`**: Devuelve el JSX que estructura la página.
+   - **Título**: Se muestra un título centrado "Tienda de Vinos".
+   - **Grid de Productos**: 
+     - Se utiliza un contenedor `div` con una clase de grid para organizar los productos en columnas.
+     - Se mapea cada producto del array `products` a un componente `Product`, pasando sus datos como props.
+   - **Carrito de Compras (`Cart`)**:
+     - Al final de la página, se incluye el componente `Cart`, que gestiona y muestra los productos que el usuario ha añadido al carrito.
+
+### ¿Cómo Funciona?
+
+- La página muestra una lista de productos que se obtienen del array `products`.
+- Cada producto se renderiza utilizando el componente `Product`, el cual permite al usuario añadir el producto al carrito.
+- El carrito de compras es gestionado por el componente `Cart`, que muestra los productos seleccionados y permite eliminarlos o vaciar el carrito.
+
+Este código es una base simple pero funcional para una tienda de vinos, donde Zustand se usa para gestionar el estado del carrito a lo largo de la aplicación, manteniendo el código modular y fácil de mantener.

@@ -1,0 +1,222 @@
+---
+sidebar_position: 4
+---
+# Zustand
+
+## 1. **¿Qué es Zustand?**
+
+Zustand es una librería ligera para manejar el estado global en aplicaciones React. A diferencia de otras librerías como Redux, Zustand es más simple y fácil de configurar. En lugar de manejar archivos de configuración complejos, Zustand permite crear el estado global de manera directa y concisa.
+
+¡Entendido! A continuación, integro el código junto a cada explicación del tutorial anterior, de manera que puedas ver cómo se implementa cada función en el contexto del tutorial de Zustand.
+
+---
+
+### 1. **¿Qué es Zustand?**
+
+Zustand es una librería ligera para manejar el estado global en aplicaciones React. A diferencia de otras librerías como Redux, Zustand es más simple y fácil de configurar. En lugar de manejar archivos de configuración complejos, Zustand permite crear el estado global de manera directa y concisa.
+
+### 2. **¿Qué es un estado global?**
+
+En React, cada componente puede tener su propio estado interno (por ejemplo, usando `useState`). Sin embargo, en aplicaciones más grandes, es común necesitar compartir el mismo estado entre múltiples componentes. Ahí es donde entra el "estado global": es un estado que puede ser accedido y modificado por cualquier componente de tu aplicación.
+
+### 3. **Ejemplo: Carrito de Compras**
+
+Imagina que estás construyendo una tienda en línea. Necesitas un carrito de compras donde los usuarios puedan agregar productos. Este carrito debe ser accesible desde cualquier parte de la aplicación: la página del producto, la página del resumen de compra, etc. Además, quieres que si el usuario recarga la página, los productos en el carrito no se pierdan. Aquí es donde Zustand puede ayudarte.
+
+### 4. **Configurando el Estado Global con Zustand**
+
+#### 4.1 **Instalación**
+
+Primero, necesitamos instalar Zustand en nuestro proyecto React. Puedes hacerlo usando npm o yarn.
+
+```bash
+npm install zustand
+```
+
+Esto instala Zustand en tu proyecto, permitiéndote usarlo para manejar el estado global.
+
+#### 4.2 **Definir el Estado del Carrito**
+
+Vamos a definir cómo se verá el estado del carrito. Esto incluye:
+
+- Los productos en el carrito.
+- El número total de productos.
+- Funciones para agregar, quitar y limpiar el carrito.
+- Una función para calcular el costo total del carrito.
+
+En Zustand, creamos un "store" (una especie de contenedor para el estado) que manejará todas estas cosas.
+
+#### **Definición de Interfaces**
+
+Primero, definimos las interfaces para describir la estructura de los datos que usaremos:
+
+```typescript
+"use client";
+
+interface Product {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  graduacion: number;
+  imagen: string;
+}
+
+interface CartItem extends Product {
+  quantity: number;
+}
+
+interface CartState {
+  cart: CartItem[];
+  totalItems: number;
+  addToCart: (product: Product) => void;
+  removeFromCart: (productId: number) => void;
+  clearCart: () => void;
+  getTotalCost: () => number;
+}
+```
+
+- **`Product`**: Describe las propiedades de un producto.
+- **`CartItem`**: Extiende `Product` para incluir la cantidad (`quantity`) de ese producto en el carrito.
+- **`CartState`**: Define el estado del carrito y las funciones que lo manipulan.
+
+#### **Creación del Store**
+
+Ahora vamos a crear el store que manejará el estado del carrito de compras. Usaremos Zustand para esto:
+
+```typescript
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+```
+
+#### **Estado Inicial**
+
+Aquí definimos el estado inicial del carrito (`cart: []`) y el número total de items (`totalItems: 0`):
+
+```typescript
+const useStore = create<CartState>()(
+  persist(
+    (set, get) => ({
+      cart: [],
+      totalItems: 0,
+```
+
+### 5. **Funciones del Store**
+
+#### **Función `addToCart`**
+
+Esta función añade un producto al carrito. Si el producto ya está en el carrito, incrementa su cantidad; de lo contrario, lo añade al carrito con una cantidad inicial de 1.
+
+```typescript
+      addToCart: (product: Product) => set((state) => {
+        const existingProduct = state.cart.find(item => item.id === product.id);
+        if (existingProduct) {
+          // Si el producto ya está en el carrito, incrementar la cantidad
+          return {
+            cart: state.cart.map(item =>
+              item.id === product.id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+            ),
+            totalItems: state.totalItems + 1,
+          };
+        } else {
+          // Si el producto no está en el carrito, agregarlo con cantidad 1
+          return {
+            cart: [...state.cart, { ...product, quantity: 1 }],
+            totalItems: state.totalItems + 1,
+          };
+        }
+      }),
+```
+
+- **Explicación**: 
+  - Primero busca si el producto ya está en el carrito (`existingProduct`).
+  - Si está, incrementa su cantidad (`quantity`).
+  - Si no está, lo agrega al carrito con una cantidad inicial de 1.
+
+#### **Función `removeFromCart`**
+
+Esta función reduce la cantidad de un producto en el carrito o lo elimina si solo hay una unidad.
+
+```typescript
+      removeFromCart: (productId: number) => set((state) => {
+        const existingProduct = state.cart.find(item => item.id === productId);
+        if (!existingProduct) return state; // Si no encuentra el producto, no hace nada
+
+        if (existingProduct.quantity > 1) {
+          // Si hay más de una unidad del producto, reducir la cantidad
+          return {
+            cart: state.cart.map(item =>
+              item.id === productId
+                ? { ...item, quantity: item.quantity - 1 }
+                : item
+            ),
+            totalItems: state.totalItems - 1,
+          };
+        } else {
+          // Si solo hay una unidad, eliminar el producto del carrito
+          return {
+            cart: state.cart.filter(item => item.id !== productId),
+            totalItems: state.totalItems - 1,
+          };
+        }
+      }),
+```
+
+- **Explicación**:
+  - Si el producto tiene más de una unidad, reduce la cantidad.
+  - Si solo hay una unidad, lo elimina del carrito.
+
+#### **Función `clearCart`**
+
+Esta función vacía todo el carrito, eliminando todos los productos y restableciendo `totalItems` a 0.
+
+```typescript
+      clearCart: () => set({ cart: [], totalItems: 0 }),
+```
+
+- **Explicación**:
+  - Limpia todo el carrito, estableciendo la lista `cart` a un array vacío y `totalItems` a 0.
+
+#### **Función `getTotalCost`**
+
+Esta función calcula el costo total del carrito sumando el precio de cada producto multiplicado por su cantidad.
+
+```typescript
+      getTotalCost: () => {
+        const { cart } = get();
+        return cart.reduce((total, item) => total + (item.precio * item.quantity), 0);
+      },
+    }),
+```
+
+- **Explicación**:
+  - Recorre todos los productos en el carrito y calcula el costo total.
+
+### 6. **Persistencia del Estado**
+
+Finalmente, usamos la middleware `persist` de Zustand para guardar el estado del carrito en `localStorage`. Esto asegura que si el usuario cierra y vuelve a abrir el navegador, el estado del carrito se mantenga:
+
+```typescript
+    {
+      name: "shopping-cart", // Clave para almacenar el estado en localStorage
+    }
+  )
+);
+
+export default useStore;
+```
+
+- **Explicación**:
+  - `persist`: Guarda el estado del carrito en `localStorage` usando la clave `"shopping-cart"`.
+
+### 7. **Ventajas de Usar Zustand**
+
+- **Simplicidad**: Configurar un estado global con Zustand es mucho más sencillo y directo que con otras librerías.
+- **Persistencia Fácil**: Gracias a la middleware `persist`, puedes guardar el estado en `localStorage` sin escribir código adicional.
+- **Accesibilidad Global**: Cualquier componente en tu aplicación puede acceder y modificar el estado del carrito sin necesidad de pasar props entre componentes.
+
+---
+
+Con este tutorial, deberías tener una comprensión clara de cómo usar Zustand para manejar un estado global en una aplicación React, específicamente para un carrito de compras. Cada función y parte del estado ha sido explicada en detalle, junto con el código correspondiente, para ayudarte a entender cómo se implementa cada funcionalidad.

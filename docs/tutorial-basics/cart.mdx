@@ -1,0 +1,123 @@
+---
+sidebar_position: 2
+---
+#  Componente `Cart`
+
+En este tutorial, te explicaré cómo construir el componente `Cart` para una tienda de vinos usando React y Zustand. Este componente muestra el contenido del carrito de compras, permite eliminar productos individuales y vaciar el carrito.
+
+### Código del Componente `Cart`
+
+```typescript
+'use client'
+
+import React from 'react';
+import useStore from '@/components/usestore';
+
+const Cart: React.FC = () => {
+  const cart = useStore((state) => state.cart);
+  const removeFromCart = useStore((state) => state.removeFromCart);
+  const totalItems = useStore((state) => state.totalItems);
+  const totalCost = useStore((state) => state.getTotalCost); 
+  const clearCart = useStore((state) => state.clearCart);
+
+  return (
+    <div className="w-9/12 mt-5 mx-auto">
+      <h2 className="text-3xl text-center font-bold mb-4">Carrito de Compras</h2>
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={clearCart}
+          className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition-colors"
+        >
+          Borrar Carrito
+        </button>
+      </div>
+
+      <p className="text-xl text-center font-bold mb-4">Total de artículos: {totalItems} Costo: ${totalCost().toFixed(2)}</p>
+      {cart.length === 0 ? (
+        <p className="text-center">El carrito está vacío</p>
+      ) : (
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border px-4 py-2">Imagen</th>
+              <th className="border px-4 py-2">Nombre</th>
+              <th className="border px-4 py-2">Cantidad</th>
+              <th className="border px-4 py-2">Precio</th>
+              <th className="border px-4 py-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cart.map((item) => (
+              <tr key={item.id} className="border-b hover:bg-gray-100">
+                <td className="border px-4 py-2">
+                  <img src={item.imagen} className="w-20" />
+                </td>
+                <td className="border px-4 py-2">{item.nombre}</td>
+                <td className="border px-4 py-2">{item.quantity}</td>
+                <td className="border px-4 py-2">${item.precio.toFixed(2)}</td>
+                <td className="border px-4 py-2 text-center">
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition-colors"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+};
+
+export default Cart;
+```
+
+### Desglose del Código
+
+1. **`'use client'`**:
+   - Asegura que el código se ejecute en el lado del cliente. Esto es necesario para que el componente maneje el estado interactivo y eventos del usuario correctamente en el navegador.
+
+2. **Importaciones**:
+   - `React` se importa para usar JSX y crear el componente funcional.
+   - `useStore` se importa para acceder al estado global definido con Zustand, específicamente para obtener los productos del carrito, eliminar productos y otras acciones relacionadas.
+
+3. **Uso del Estado Global con Zustand**:
+   - **`cart`**: Obtiene la lista de productos en el carrito.
+   - **`removeFromCart`**: Función para eliminar un producto del carrito por su `id`.
+   - **`totalItems`**: Obtiene el número total de artículos en el carrito.
+   - **`totalCost`**: Obtiene el costo total del carrito.
+   - **`clearCart`**: Función para vaciar el carrito.
+
+4. **Estructura del JSX**:
+   - **Contenedor Principal (`<div>`)**:
+     - **Título (`<h2>`)**: Muestra el título "Carrito de Compras" centrado en la parte superior.
+     - **Botón para Vaciar el Carrito**:
+       - Un botón con un manejador de eventos `onClick` que llama a la función `clearCart` para vaciar el carrito.
+     - **Resumen del Carrito (`<p>`)**:
+       - Muestra el número total de artículos y el costo total del carrito.
+     - **Condicional para Carrito Vacío**:
+       - Si el carrito está vacío, se muestra un mensaje "El carrito está vacío".
+     - **Tabla de Productos en el Carrito (`<table>`)**:
+       - **Encabezado (`<thead>`)**: Define las columnas de la tabla (Imagen, Nombre, Cantidad, Precio, Acciones).
+       - **Cuerpo (`<tbody>`)**: Mapea sobre los productos en el carrito y los muestra en filas. Cada fila incluye:
+         - **Imagen**: Muestra la imagen del producto.
+         - **Nombre**: Muestra el nombre del producto.
+         - **Cantidad**: Muestra la cantidad del producto en el carrito.
+         - **Precio**: Muestra el precio del producto.
+         - **Acciones**: Un botón para eliminar el producto del carrito. Este botón llama a `removeFromCart` con el `id` del producto cuando se hace clic.
+
+### Cómo Funciona
+
+- **Visualización del Carrito**:
+  El componente `Cart` presenta los productos que el usuario ha añadido al carrito, mostrando detalles como la imagen, nombre, cantidad y precio de cada producto.
+
+- **Gestión de Productos**:
+  - **Eliminar Producto**: Cada producto en la tabla tiene un botón para eliminarlo del carrito. La función `removeFromCart` actualiza el estado global, eliminando el producto del carrito.
+  - **Vaciar Carrito**: El botón "Borrar Carrito" permite vaciar el carrito completo al llamar a `clearCart`.
+
+### Conclusión
+
+El componente `Cart` proporciona una interfaz para gestionar el carrito de compras, permitiendo a los usuarios ver y manejar los productos en su carrito. Utiliza Zustand para acceder y manipular el estado global del carrito de compras, asegurando una actualización en tiempo real y una experiencia de usuario fluida.
